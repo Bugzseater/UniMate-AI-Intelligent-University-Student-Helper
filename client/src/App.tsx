@@ -27,7 +27,7 @@ export default function App() {
     setInput("");
 
     const res = await axios.post<{ reply: string }>(
-      "https://meticulous-benevolence-production-1209.up.railway.app/",
+      "https://meticulous-benevolence-production-1209.up.railway.app/chat",
       { message }
     );
 
