@@ -12,14 +12,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/chat", async (req, res) => {
-  try {
-    const { message } = req.body;
-    const reply = await agentResponse(message);
-    res.json({ reply });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "AI error" });
-  }
+  const { message } = req.body;
+  const reply = await agentResponse(message);
+  res.json({ reply });
 });
 
 app.listen(5000, () => console.log("Server started on 5000"));

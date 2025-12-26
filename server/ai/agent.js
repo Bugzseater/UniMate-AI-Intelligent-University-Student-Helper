@@ -1,57 +1,72 @@
 import { queryKnowledge } from "./rag.js";
 
+// ================= MAIN AGENT =================
+
 export async function agentResponse(userMessage) {
-  // 🧠 Step 1: Understand intent
   const intent = detectIntent(userMessage);
+  const searchQuery = `${intent} : ${userMessage}`;
 
-  // 🧭 Step 2: Plan what knowledge is needed
-  const plan = createPlan(intent);
+  const knowledge = await queryKnowledge(searchQuery, intent);
 
-  // 📚 Step 3: Retrieve knowledge
-  const knowledge = await queryKnowledge(userMessage);
+  let response = `🧠 UniMate AI\n\n`;
+  response += `❓ ${userMessage}\n\n`;
 
-  // 🧩 Step 4: Compose final response
-  const finalAnswer = `
-🧠 **UniMate AI Assistant**
+  response += `🏠 Answer:\n${cleanAnswer(knowledge)}\n\n`;
 
-**Your Question:** ${userMessage}
+  response += `💡 Advice:\n${generateAdvice(intent)}\n\n`;
+  response += `➡️ Next:\n${suggestNext(intent)}`;
 
-**What I Found:**
-${knowledge}
-
-**My Advice:**
-${generateAdvice(intent)}
-
-**Next Step:**
-${suggestNext(intent)}
-`;
-
-  return finalAnswer;
+  return response;
 }
 
-function detectIntent(msg) {
-  if (msg.includes("expense")) return "finance";
-  if (msg.includes("income")) return "income";
-  if (msg.includes("boarding") || msg.includes("bodima")) return "housing";
-  if (msg.includes("study")) return "study";
+// ================= INTELLIGENCE =================
+
+function detectIntent(message) {
+  const m = message.toLowerCase();
+
+  if (m.includes("bodima") || m.includes("boarding") || m.includes("rent") || m.includes("stay"))
+    return "housing";
+
+  if (m.includes("expense") || m.includes("wiyadam") || m.includes("cost") || m.includes("gasta"))
+    return "finance";
+
+  if (m.includes("income") || m.includes("job") || m.includes("salli") || m.includes("earning"))
+    return "income";
+
+  if (m.includes("study") || m.includes("exam") || m.includes("learn"))
+    return "study";
+
   return "general";
 }
 
-function createPlan(intent) {
-  return `Collect ${intent} knowledge → Analyze → Provide steps`;
+// ================= RESPONSE ENHANCERS =================
+
+function cleanAnswer(text) {
+  // Keep only the most relevant content (remove mixed info)
+  return text.split("\n")[0];
 }
 
 function generateAdvice(intent) {
   const tips = {
-    finance: "Track expenses, reduce unnecessary spending, and plan monthly budgets.",
-    income: "Look for part-time work, freelancing, tutoring, or online jobs.",
-    housing: "Check campus boards, social groups, and verify safety before renting.",
-    study: "Create a study timetable and use active learning techniques.",
-    general: "Let’s explore your situation step by step."
+    housing:
+      "Bodima hoyagaddi pahasu gaman karanna puluwan thana, suraksha sahitha da kiyala balanna. Rent, current bill, water, internet monawada cover wenne kiyala hariyata check karanna.",
+
+    finance:
+      "Masika expense list ekak hadala unnecessary wiyadam adu karanna. Monthly salli walin tikak hari save karanna.",
+
+    income:
+      "Part-time jobs, online freelancing, tutoring wage dewal walin aluth income ekak hadaganna puluwan.",
+
+    study:
+      "Daily study plan ekak hadala time table ekakata wada karanna. Pomodoro method wage techniques use karanna.",
+
+    general:
+      "Oya situation eka tikak explain karanna. Ehema unoth mama hondama solution ekak hadala dennam."
   };
+
   return tips[intent];
 }
 
 function suggestNext(intent) {
-  return `Would you like me to create a personal plan for your ${intent}?`;
+  return `Oyata one nam simple ${intent} plan ekak mama hadala denna puluwan.`;
 }

@@ -21,17 +21,25 @@ export async function ingestDocs() {
   console.log("✅ vectors.json created");
 }
 
-export async function searchDocs(query) {
-  console.log("🔍 Query:", query);
-
+export async function searchDocs(query, intent) {
   const vectors = JSON.parse(fs.readFileSync(DB_FILE));
   const qEmbedding = await getEmbedding(query);
 
   const ranked = vectors
-    .map(v => ({ ...v, score: cosine(qEmbedding, v.embedding) }))
-    .sort((a, b) => b.score - a.score);
+    .map(v => {
+      const intentBoost =
+        intent === "housing" && v.file.includes("boarding") ? 0.3 :
+        intent === "finance" && (v.file.includes("expense") || v.file.includes("budget")) ? 0.3 :
+        intent === "income" && v.file.includes("parttime") ? 0.3 :
+        intent === "study" && v.file.includes("study") ? 0.3 :
+        0;
 
-  console.log("🏆 Best match:", ranked[0].file);
+      return {
+        ...v,
+        score: cosine(qEmbedding, v.embedding) + intentBoost
+      };
+    })
+    .sort((a, b) => b.score - a.score);
 
   return ranked.slice(0, 2).map(v => v.text).join("\n");
 }
