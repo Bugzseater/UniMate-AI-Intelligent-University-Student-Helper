@@ -27,7 +27,7 @@ export default function App() {
     setInput("");
 
     const res = await axios.post<{ reply: string }>(
-      "http://localhost:5000/chat",
+      "https://meticulous-benevolence-production-1209.up.railway.app/",
       { message }
     );
 
