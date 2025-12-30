@@ -11,7 +11,15 @@ export async function agentResponse(userMessage) {
   let response = `🧠 UniMate AI\n\n`;
   response += `❓ ${userMessage}\n\n`;
 
-  response += `🏠 Answer:\n${cleanAnswer(knowledge)}\n\n`;
+  if (knowledge) {
+    response += `📚 Answer:\n${cleanAnswer(knowledge.text)}\n\n`;
+
+    if (knowledge.link && knowledge.link !== "N/A") {
+      response += `🔗 Learn more: ${knowledge.link}\n\n`;
+    }
+  } else {
+    response += `📚 Answer:\nMe prashneta sambandha honda knowledge danata database eke nathi widihak pennala. Ehema nam mata kiyanna oya one widihata.\n\n`;
+  }
 
   response += `💡 Advice:\n${generateAdvice(intent)}\n\n`;
   response += `➡️ Next:\n${suggestNext(intent)}`;
@@ -33,8 +41,11 @@ function detectIntent(message) {
   if (m.includes("income") || m.includes("job") || m.includes("salli") || m.includes("earning"))
     return "income";
 
-  if (m.includes("study") || m.includes("exam") || m.includes("learn"))
+  if (m.includes("study") || m.includes("exam") || m.includes("learn") || m.includes("notes"))
     return "study";
+
+  if (m.includes("stress") || m.includes("mental") || m.includes("life"))
+    return "life";
 
   return "general";
 }
@@ -42,26 +53,32 @@ function detectIntent(message) {
 // ================= RESPONSE ENHANCERS =================
 
 function cleanAnswer(text) {
-  // Keep only the most relevant content (remove mixed info)
-  return text.split("\n")[0];
+  return text
+    .replace(/\n+/g, " ")
+    .split(". ")
+    .slice(0, 3)
+    .join(". ") + ".";
 }
 
 function generateAdvice(intent) {
   const tips = {
     housing:
-      "Bodima hoyagaddi pahasu gaman karanna puluwan thana, suraksha sahitha da kiyala balanna. Rent, current bill, water, internet monawada cover wenne kiyala hariyata check karanna.",
+      "Bodima hoyagaddi suraksha sahitha da kiyala balanna, campus langada kiyala check karanna, water, electricity, internet monawada cover wenne kiyala confirm karanna.",
 
     finance:
-      "Masika expense list ekak hadala unnecessary wiyadam adu karanna. Monthly salli walin tikak hari save karanna.",
+      "Masika expense list ekak hadala unnecessary wiyadam adu karanna. Monthly income walin tikak hari save karanna.",
 
     income:
-      "Part-time jobs, online freelancing, tutoring wage dewal walin aluth income ekak hadaganna puluwan.",
+      "Part-time job, online freelancing, tutoring wage dewal walin aluth income ekak hadaganna puluwan.",
 
     study:
       "Daily study plan ekak hadala time table ekakata wada karanna. Pomodoro method wage techniques use karanna.",
 
+    life:
+      "Stress adu karaganna sleep, exercise, saha friends samaga kalaya hariyata balance karanna.",
+
     general:
-      "Oya situation eka tikak explain karanna. Ehema unoth mama hondama solution ekak hadala dennam."
+      "Oya prashnaya tikak vistara karanna. Ehema unoth mama hondama solution ekak hadala dennam."
   };
 
   return tips[intent];
