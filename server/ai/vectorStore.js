@@ -37,13 +37,39 @@ export async function ingestDocs() {
 
 export async function searchDocs(query, intent) {
   const vectors = JSON.parse(fs.readFileSync("./ai/vectors.json"));
-  console.log("INTENT:", intent);
+  const qEmbedding = await getEmbedding(query);
 
-  const filtered = vectors.filter(v => v.file.includes("study"));
-  console.log("FILES USED:", filtered.map(v => v.file));
+  // Strict domain lock
+  let domain = [];
 
-  return filtered[0];
+  if (intent === "study")
+    domain = vectors.filter(v => v.file.includes("study"));
+
+  else if (intent === "finance")
+    domain = vectors.filter(v => v.file.includes("expense") || v.file.includes("budget"));
+
+  else if (intent === "income")
+    domain = vectors.filter(v => v.file.includes("income") || v.file.includes("parttime") || v.file.includes("online"));
+
+  else if (intent === "housing")
+    domain = vectors.filter(v => v.file.includes("boarding"));
+
+  else if (intent === "life")
+    domain = vectors.filter(v => v.file.includes("mental") || v.file.includes("campus"));
+
+  else
+    domain = vectors;
+
+  // No fallback. Must obey domain.
+  if (domain.length === 0) return null;
+
+  const ranked = domain
+    .map(v => ({ ...v, score: cosine(qEmbedding, v.embedding) }))
+    .sort((a, b) => b.score - a.score);
+
+  return ranked[0];
 }
+
 
 
 
