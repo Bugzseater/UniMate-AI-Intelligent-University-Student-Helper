@@ -1,3 +1,7 @@
+CONTENT:
 Common student expenses include food, transport, rent, printing, internet, and study materials.
 Tracking expenses helps identify unnecessary costs.
-Cooking meals and using student discounts can reduce monthly expenses.
+Cooking meals and using student discounts reduce monthly expenses.
+
+LINK:
+https://www.reddit.com/r/srilanka/comments/1cbwxr4/how_much_money_does_a_university_student_in_sri/

@@ -4,6 +4,8 @@ import { getEmbedding } from "./embedder.js";
 
 const DB_FILE = "./ai/vectors.json";
 
+console.log("🔥 NEW vectorStore.js LOADED");
+
 export async function ingestDocs() {
   console.log("📥 Starting ingestion...");
 
@@ -35,27 +37,13 @@ export async function ingestDocs() {
 
 export async function searchDocs(query, intent) {
   const vectors = JSON.parse(fs.readFileSync("./ai/vectors.json"));
-  const qEmbedding = await getEmbedding(query);
+  console.log("INTENT:", intent);
 
-  // 1️⃣ First: filter by domain strictly
-  let domainVectors = vectors.filter(v => {
-    if (intent === "study") return v.file.includes("study");
-    if (intent === "finance") return v.file.includes("expense") || v.file.includes("budget");
-    if (intent === "income") return v.file.includes("income") || v.file.includes("parttime") || v.file.includes("online");
-    if (intent === "housing") return v.file.includes("boarding");
-    if (intent === "life") return v.file.includes("mental") || v.file.includes("campus");
-    return true;
-  });
+  const filtered = vectors.filter(v => v.file.includes("study"));
+  console.log("FILES USED:", filtered.map(v => v.file));
 
-  // If nothing matched, fall back to full knowledge base
-  if (domainVectors.length === 0) domainVectors = vectors;
-
-  // 2️⃣ Rank only inside that domain
-  const ranked = domainVectors
-    .map(v => ({ ...v, score: cosine(qEmbedding, v.embedding) }))
-    .sort((a, b) => b.score - a.score);
-
-  return ranked[0];
+  return filtered[0];
 }
+
 
 

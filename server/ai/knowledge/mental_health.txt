@@ -1,3 +1,7 @@
+CONTENT:
 Mental health is important for academic success.
-Students should manage stress through proper planning, regular exercise, good sleep, and social support.
-Talking with friends, family, or counselors helps maintain emotional well-being.
+Students should manage stress with proper sleep, exercise, and social support.
+Talking with friends or counselors improves emotional well-being.
+
+LINK:
+https://css.kln.ac.lk/sustainability/sdg-progress-tracker/sdg-3-good-health-well-being

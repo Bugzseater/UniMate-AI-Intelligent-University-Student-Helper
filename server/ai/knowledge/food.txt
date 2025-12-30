@@ -1,3 +1,7 @@
+CONTENT:
 Students should eat balanced meals with fruits, vegetables, protein, and enough water.
-Avoid excessive fast food consumption.
-Maintaining healthy eating habits improves energy, focus, and academic performance.
+Avoid excessive fast food.
+Healthy eating improves focus, memory, and energy levels.
+
+LINK:
+https://www.healthline.com/nutrition/how-to-eat-healthy
